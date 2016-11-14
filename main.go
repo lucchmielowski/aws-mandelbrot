@@ -3,49 +3,30 @@ package main
 import (
 	"bytes"
 	"errors"
-	"fmt"
-	"goji.io"
-	"goji.io/pat"
+	"github.com/kataras/iris"
+	"github.com/lucchmielowski/aws-mandelbrot/mandelbrot"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
-	"local/mandelbrot-aws/mandelbrot"
-	"log"
-	"net/http"
 	"runtime"
-	"strconv"
 )
 
-func renderMandlebrot(w http.ResponseWriter, r *http.Request) {
+func renderMandlebrot(c *iris.Context) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	var err error
-	ext := r.URL.Query().Get("ext")
+	ext := c.URLParam("ext")
 
-	height := r.URL.Query().Get("height")
+	height, err := c.URLParamInt("height")
 
-	width := r.URL.Query().Get("width")
+	width, err := c.URLParamInt("width")
 
-	if ext == "" || height == "" || width == "" {
-		http.Error(w, http.StatusText(400), 400)
-		fmt.Fprintf(w, "should have parameters 'ext', 'width', 'height'")
+	if ext == "" || err != nil {
+		c.EmitError(iris.StatusBadRequest)
 		return
 	}
 
-	intH, err := strconv.Atoi(height)
-
-	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-	}
-
-	intW, err := strconv.Atoi(width)
-
-	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-	}
-
 	buffer := new(bytes.Buffer)
-	img := mandelbrot.Create(intW, intH)
+	img := mandelbrot.Create(width, height)
 
 	switch ext {
 	case "png":
@@ -60,19 +41,14 @@ func renderMandlebrot(w http.ResponseWriter, r *http.Request) {
 
 	// unless you can't
 	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
+		c.EmitError(iris.StatusInternalServerError)
 	}
 
-	w.Header().Set("Content-Type", "image/"+ext)
-	w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
-	if _, err := w.Write(buffer.Bytes()); err != nil {
-		log.Println("unable to write message")
-	}
+	c.SetContentType("image/" + ext)
+	c.SetBody(buffer.Bytes())
 }
 
 func main() {
-	mux := goji.NewMux()
-	mux.HandleFunc(pat.Get("/render/mandelbrot"), renderMandlebrot)
-
-	http.ListenAndServe("localhost:3000", mux)
+	iris.Get("/render/mandelbrot", renderMandlebrot)
+	iris.Listen(":3000")
 }

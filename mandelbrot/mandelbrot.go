@@ -1,14 +1,8 @@
 package mandelbrot
 
 import (
-	"flag"
 	"image"
 	"image/color"
-)
-
-var (
-	mode    = flag.String("mode", "seq", "mode: seq, px, row, workers")
-	workers = flag.Int("workers", 1, "numbers of workers to use")
 )
 
 type img struct {
