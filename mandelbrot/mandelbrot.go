@@ -4,7 +4,6 @@ import (
 	"flag"
 	"image"
 	"image/color"
-	"sync"
 )
 
 var (
@@ -29,66 +28,16 @@ func Create(h, w int) image.Image {
 
 	m := &img{h, w, c}
 
-	switch *mode {
-	case "seq":
-		seqFillImg(m)
-	case "px":
-		oneToOneFillImg(m)
-	case "row":
-		onePerRowFillImg(m)
-	case "workers":
-		nWorkersFillImg(m)
-	default:
-		panic("unknown mode")
-	}
+	nWorkersFillImg(m, 4)
 
 	return m
 }
 
-//Sequential
-func seqFillImg(m *img) {
-	for i, row := range m.m {
-		for j := range row {
-			fillPixel(m, i, j)
-		}
-	}
-}
-
-//one goroutine per pixel
-func oneToOneFillImg(m *img) {
-	var wg sync.WaitGroup
-	wg.Add(m.h * m.w)
-	for i, row := range m.m {
-		for j := range row {
-			go func(i, j int) {
-				fillPixel(m, i, j)
-				wg.Done()
-			}(i, j)
-		}
-	}
-	wg.Wait()
-}
-
-//one per row of pixel
-func onePerRowFillImg(m *img) {
-	var wg sync.WaitGroup
-	wg.Add(m.h)
-	for i := range m.m {
-		go func(i int) {
-			for j := range m.m[i] {
-				fillPixel(m, i, j)
-			}
-			wg.Done()
-		}(i)
-	}
-	wg.Wait()
-}
-
 //4 workers per CPU
-func nWorkersFillImg(m *img) {
+func nWorkersFillImg(m *img, workers int) {
 	c := make(chan struct{ i, j int })
 
-	for i := 0; i < *workers; i++ {
+	for i := 0; i < workers; i++ {
 		go func() {
 			for t := range c {
 				fillPixel(m, t.i, t.j)
@@ -108,7 +57,7 @@ func fillPixel(m *img, i, j int) {
 	xi := 3.5*float64(i)/float64(m.w) - 2.5
 	yi := 2*float64(j)/float64(m.h) - 1
 
-	const maxI = 10000
+	const maxI = 1000
 	x, y := 0., 0.
 	for i := 0; (x*x+y*y < 4) && i < maxI; i++ {
 		x, y = x*x-y*y+xi, 2*x*y+yi
