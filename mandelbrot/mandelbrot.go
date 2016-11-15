@@ -3,6 +3,14 @@ package mandelbrot
 import (
 	"image"
 	"image/color"
+	"math/rand"
+	"time"
+)
+
+var (
+	randR uint8
+	randG uint8
+	randB uint8
 )
 
 type img struct {
@@ -15,6 +23,10 @@ func (m *img) ColorModel() color.Model { return color.RGBAModel }
 func (m *img) Bounds() image.Rectangle { return image.Rect(0, 0, m.h, m.w) }
 
 func Create(h, w int) image.Image {
+	randR = random(1, 255)
+	randG = random(1, 255)
+	randB = random(1, 255)
+
 	c := make([][]color.RGBA, h)
 	for i := range c {
 		c[i] = make([]color.RGBA, w)
@@ -22,33 +34,23 @@ func Create(h, w int) image.Image {
 
 	m := &img{h, w, c}
 
-	nWorkersFillImg(m, 4)
+	seqFillImg(m)
 
 	return m
 }
 
-//4 workers per CPU
-func nWorkersFillImg(m *img, workers int) {
-	c := make(chan struct{ i, j int })
-
-	for i := 0; i < workers; i++ {
-		go func() {
-			for t := range c {
-				fillPixel(m, t.i, t.j)
-			}
-		}()
-	}
-
+func seqFillImg(m *img) {
 	for i, row := range m.m {
 		for j := range row {
-			c <- struct{ i, j int }{i, j}
+			fillPixel(m, i, j)
 		}
 	}
-	close(c)
 }
 
 func fillPixel(m *img, i, j int) {
+	// normalized from -2.5 to 1
 	xi := 3.5*float64(i)/float64(m.w) - 2.5
+	// normalized from -1 to 1
 	yi := 2*float64(j)/float64(m.h) - 1
 
 	const maxI = 1000
@@ -59,8 +61,12 @@ func fillPixel(m *img, i, j int) {
 
 	paint(&m.m[i][j], x, y)
 }
+func random(min, max int) uint8 {
+	rand.Seed(time.Now().Unix())
+	return uint8(rand.Intn(max-min) + min)
+}
 
 func paint(c *color.RGBA, x, y float64) {
 	n := byte(x * y)
-	c.R, c.G, c.B, c.A = n, n, n, 255
+	c.R, c.G, c.B, c.A = n*randR, n*randG, n*randB, 255
 }
