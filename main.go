@@ -50,5 +50,5 @@ func renderMandlebrot(c *iris.Context) {
 
 func main() {
 	iris.Get("/render/mandelbrot", renderMandlebrot)
-	iris.Listen(":8080")
+	iris.Listen(":80")
 }
