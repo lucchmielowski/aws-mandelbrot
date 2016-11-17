@@ -8,6 +8,7 @@ import (
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"io"
 	"log"
 	"net/http"
 	"runtime"
@@ -21,7 +22,7 @@ func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
 	}
 }
 
-func renderMandlebrot(w http.ResponseWriter, r *http.Request) {
+func RenderMandlebrot(w http.ResponseWriter, r *http.Request) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	ext := r.URL.Query().Get("ext")
@@ -60,15 +61,17 @@ func renderMandlebrot(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func httpPing(w http.ResponseWriter, r *http.Request) {
+func HttpPingHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Server", "A Go Web Server")
+	w.Header().Set("Content-Type", "application/json")
+	io.WriteString(w, `{"alive": true}`)
 	w.WriteHeader(200)
 }
 
 func main() {
 	mux := http.NewServeMux()
-	rM := http.HandlerFunc(renderMandlebrot)
-	hW := http.HandlerFunc(httpPing)
+	rM := http.HandlerFunc(RenderMandlebrot)
+	hW := http.HandlerFunc(HttpPingHandler)
 	mux.Handle("/", hW)
 	mux.Handle("/mandelbrot", rM)
 	http.ListenAndServe(":3000", mux)
