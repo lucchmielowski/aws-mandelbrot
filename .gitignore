@@ -30,3 +30,4 @@ _testmain.go
 !.elasticbeanstalk/*.global.yml
 
 conf
+aws_mandelbrot
