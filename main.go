@@ -3,26 +3,35 @@ package main
 import (
 	"bytes"
 	"errors"
-	"github.com/kataras/iris"
+	"fmt"
 	"github.com/lucchmielowski/aws-mandelbrot/mandelbrot"
 	"image/gif"
 	"image/jpeg"
 	"image/png"
+	"log"
+	"net/http"
 	"runtime"
+	"strconv"
 )
 
-func renderMandlebrot(c *iris.Context) {
+func errorHandler(w http.ResponseWriter, r *http.Request, status int) {
+	w.WriteHeader(status)
+	if status == http.StatusNotFound {
+		fmt.Fprint(w, "custom 404")
+	}
+}
+
+func renderMandlebrot(w http.ResponseWriter, r *http.Request) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	ext := c.URLParam("ext")
+	ext := r.URL.Query().Get("ext")
 
-	height, err := c.URLParamInt("height")
+	height, err := strconv.Atoi(r.URL.Query().Get("height"))
 
-	width, err := c.URLParamInt("width")
+	width, err := strconv.Atoi(r.URL.Query().Get("width"))
 
 	if ext == "" || err != nil {
-		c.EmitError(iris.StatusBadRequest)
-		return
+		errorHandler(w, r, http.StatusBadRequest)
 	}
 
 	buffer := new(bytes.Buffer)
@@ -41,14 +50,19 @@ func renderMandlebrot(c *iris.Context) {
 
 	// unless you can't
 	if err != nil {
-		c.EmitError(iris.StatusInternalServerError)
+		errorHandler(w, r, http.StatusInternalServerError)
 	}
 
-	c.SetContentType("image/" + ext)
-	c.SetBody(buffer.Bytes())
+	w.Header().Set("Content-Type", "image/jpeg")
+	w.Header().Set("Content-Length", strconv.Itoa(len(buffer.Bytes())))
+	if _, err := w.Write(buffer.Bytes()); err != nil {
+		log.Println("unable to write image.")
+	}
 }
 
 func main() {
-	iris.Get("/render/mandelbrot", renderMandlebrot)
-	iris.Listen(":3000")
+	mux := http.NewServeMux()
+	rM := http.HandlerFunc(renderMandlebrot)
+	mux.Handle("/mandelbrot", rM)
+	http.ListenAndServe(":3000", mux)
 }
