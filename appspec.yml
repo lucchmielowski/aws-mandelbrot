@@ -1,0 +1,32 @@
+version: 0.0
+os: linux
+files:
+  - source: scripts/upstart/aws-mandelbrot.service
+    destination: /etc/systemd/system/
+  - source: /
+    destination: /home/ubuntu/gocode/src/github.com/lucchmielowski/aws-mandelbrot
+permissions:
+  - object: /
+    pattern: "**"
+    owner: ubuntu
+    group: ubuntu
+hooks:
+  # ApplicationStop:
+  #   - location: scripts/application_stop.sh
+  #     timeout: 300
+  #     runas: root
+  BeforeInstall:
+    - location: scripts/before_install.sh
+      timeout: 600
+      runas: root
+  AfterInstall:
+    - location: scripts/after_install.sh
+      timeout: 300
+      runas: ubuntu
+  ApplicationStart:
+    - location: scripts/application_start.sh
+      timeout: 300
+  # ValidateService:
+  #   - location: scripts/validate_service.sh
+  #     timeout: 10
+  #     runas: root
