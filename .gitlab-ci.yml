@@ -1,6 +1,7 @@
 image: golang:1.6
 
 before_script:
+  - godep go install
   - go build
 
 test:
