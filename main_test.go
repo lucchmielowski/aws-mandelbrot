@@ -18,7 +18,7 @@ func TestHealthCheckHandler(t *testing.T) {
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+		t.Errorf("handler returned wrong status code: got %v wanted %v", status, http.StatusOK)
 	}
 	expected := `{"alive": true}`
 	if rr.Body.String() != expected {
