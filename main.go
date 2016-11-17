@@ -60,9 +60,16 @@ func renderMandlebrot(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func httpPing(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Server", "A Go Web Server")
+	w.WriteHeader(200)
+}
+
 func main() {
 	mux := http.NewServeMux()
 	rM := http.HandlerFunc(renderMandlebrot)
+	hW := http.HandlerFunc(httpPing)
+	mux.Handle("/", hW)
 	mux.Handle("/mandelbrot", rM)
 	http.ListenAndServe(":3000", mux)
 }
