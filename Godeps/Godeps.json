@@ -1,6 +1,0 @@
-{
-	"ImportPath": "github.com/lucchmielowski/aws-mandelbrot",
-	"GoVersion": "go1.6",
-	"GodepVersion": "v74",
-	"Deps": []
-}
