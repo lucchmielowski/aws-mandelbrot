@@ -10,7 +10,9 @@ import (
 	"image/png"
 	"io"
 	"log"
+	"net"
 	"net/http"
+	"os"
 	"runtime"
 	"strconv"
 )
@@ -64,8 +66,27 @@ func RenderMandlebrot(w http.ResponseWriter, r *http.Request) {
 func HttpPingHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Server", "A Go Web Server")
 	w.Header().Set("Content-Type", "application/json")
-	io.WriteString(w, `{"alive": true}`)
+	myIp := getMyIp()
+	io.WriteString(w, fmt.Sprintf(`{"alive": true, ip: %s}`, myIp))
 	w.WriteHeader(200)
+}
+
+func getMyIp() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		os.Stderr.WriteString("Oops: " + err.Error() + "\n")
+		os.Exit(1)
+	}
+
+	for _, a := range addrs {
+		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+
+	return "no ip found."
 }
 
 func main() {
