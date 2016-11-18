@@ -1,8 +1,10 @@
-[Unit]
-Description=Golang mandelbrot app
+# upstart configuration
 
-[Service]
-ExecStart=/bin/bash -c 'sudo /root/aws-mandelbrot/aws-mandelbrot'
+description "aws-mandelbrot"
+author "luc chmielowski"
 
-[Install]
-WantedBy=multi-user.target
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+exec /home/ubuntu/gocode/bin/aws-mandelbrot

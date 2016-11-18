@@ -1,13 +1,8 @@
-#!/bin/bash
 
-yum update -y
-yum upgrade -y
+#!/bin/bash
+sudo apt-add-repository ppa:ubuntu-lxc/lxd-stable
+apt-get update -y
+apt-get upgrade -y
 
 # install dependencies
-yum install mercurial git gcc libc6-dev go -y
-
-service nginx stop
-service nginx start
-
-# install golang
-cd /home/ec2-user
+apt-get install mercurial git gcc libc6-dev nginx golang -y
