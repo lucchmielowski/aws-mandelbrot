@@ -29,5 +29,4 @@ _testmain.go
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
-conf
 aws_mandelbrot
