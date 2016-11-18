@@ -6,7 +6,7 @@ files:
   - source: scripts/upstart/default
     destination: /etc/nginx/sites-available/
   - source: /
-    destination: /home/ubuntu/gocode/src/github.com/lucchmielowski/aws-mandelbrot
+    destination: /home/ec2-user/gocode/src/github.com/lucchmielowski/aws-mandelbrot
 permissions:
   - object: /
     pattern: "**"
