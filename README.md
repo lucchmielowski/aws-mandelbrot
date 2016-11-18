@@ -29,7 +29,9 @@ La mise en place d'un Jenkins aurait été trop longue, j'ai donc opté pour [Co
 
 Quand on push du code sur Github, Codeship effectue les actions suivantes:
 1. Build notre application
+
 2. Effectuer les tests
+
 3. Si tout les tests sont passés, déployer le build au format zip
 
 Une fois le build terminé, Codeship envoit le build à [AWS Codedeploy](https://aws.amazon.com/fr/codedeploy/), et ce dernier se charge alors de **déployer le nouveau code sur toutes les instances ec2 associées à notre Scalling Group** (pour plus d'informations sur la procédure de déploiement voir le fichier *appspec.yml*)
