@@ -28,6 +28,7 @@ Une autre problématique de ce projet était de mettre en place du **déploiemen
 La mise en place d'un Jenkins aurait été trop longue, j'ai donc opté pour [Codeship](https://codeship.com/) qui nous permet de créer un pipeline de déploiement.
 
 Quand on push du code sur Github, Codeship effectue les actions suivantes:
+
 1. Build notre application
 
 2. Effectuer les tests
