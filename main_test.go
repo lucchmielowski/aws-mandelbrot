@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -20,7 +21,8 @@ func TestHealthCheckHandler(t *testing.T) {
 	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v wanted %v", status, http.StatusOK)
 	}
-	expected := `{"alive": true}`
+
+	expected := fmt.Sprintf(`{"alive": true, ip: %s}`, getMyIp())
 	if rr.Body.String() != expected {
 		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
 	}
