@@ -5,6 +5,9 @@ cd $HOME
 mkdir gocode
 echo "export GOPATH=$HOME/gocode" >> $HOME/.bashrc
 echo "export PATH=$PATH:$GOPATH/bin" >> $HOME/.bashrc
+export GOPATH=$HOME/gocode
+export PATH=$PATH:$GOPATH/bin
+
 
 # activate changes
 source $HOME/.bashrc
