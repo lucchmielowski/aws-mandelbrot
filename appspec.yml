@@ -3,7 +3,7 @@ os: linux
 files:
   - source: scripts/upstart/aws-mandelbrot.service
     destination: /etc/systemd/system/
-  - source: scripts/upstart/default
+  - source: scripts/upstart/mandelbrot
     destination: /etc/nginx/sites-available/
   - source: /
     destination: /home/ubuntu/gocode/src/github.com/lucchmielowski/aws-mandelbrot
