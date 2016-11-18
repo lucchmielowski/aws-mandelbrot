@@ -1,13 +1,10 @@
 #!/bin/bash
 
-apt-get update -y
-apt-get upgrade -y
+yum update -y
+yum upgrade -y
 
 # install dependencies
-apt-get install mercurial git gcc libc6-dev -y
+yum install mercurial git gcc libc6-dev nginx go -y
 
 # install golang
-cd /home/ubuntu
-hg clone -u release https://code.google.com/p/go
-cd go/src
-./all.bash
+cd /home/ec2-user

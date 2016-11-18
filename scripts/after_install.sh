@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# set golang path
-echo "export PATH=$PATH:/home/ubuntu/go/bin" >> $HOME/.bashrc
-
 # make golang workspace
 cd $HOME
 mkdir gocode
