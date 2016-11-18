@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Nginx conf
-sudo ln -s /etc/nginx/sites-available/mandelbrot /etc/nginx/sites-enabled/mandelbrot
-sudo rm /etc/nginx/sites-enabled/default
-sudo service nginx restart
-
 # make golang workspace
 cd $HOME
 mkdir gocode
